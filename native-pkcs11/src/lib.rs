@@ -580,15 +580,7 @@ cryptoki_fn!(
                     .map_err(|_| Error::AttributeTypeInvalid(attribute.type_))?;
                 if let Some(value) = object.attribute(type_) {
                     let value = value.as_raw_value();
-                    attribute.ulValueLen = value.len() as CK_ULONG;
-                    if attribute.pValue.is_null() {
-                        continue;
-                    }
-                    if (attribute.ulValueLen as usize) < value.len() {
-                        continue;
-                    }
-                    unsafe { slice::from_raw_parts_mut(attribute.pValue as *mut u8, value.len()) }
-                        .copy_from_slice(&value);
+                    attribute.set_value(value);
                 } else {
                     attribute.ulValueLen = CK_UNAVAILABLE_INFORMATION;
                 }

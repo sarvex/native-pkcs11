@@ -15,6 +15,8 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
+use std::slice;
+
 #[cfg(target_os = "windows")]
 include!("pkcs11_windows.rs");
 
@@ -28,6 +30,29 @@ include!("pkcs11_unix.rs");
 #[derive(Debug, Copy, Clone)]
 pub struct CK_ATTRIBUTE {
     pub type_: CK_ATTRIBUTE_TYPE,
-    pub pValue: CK_VOID_PTR,
+    pValue: CK_VOID_PTR,
     pub ulValueLen: CK_ULONG,
+}
+
+impl CK_ATTRIBUTE {
+    pub fn value(&self) -> &[u8] {
+        if self.pValue.is_null() {
+            return &[];
+        }
+        unsafe { std::slice::from_raw_parts(self.pValue as *const u8, self.ulValueLen as usize) }
+    }
+
+    pub fn set_value(&mut self, value: Vec<u8>) {
+        if self.pValue.is_null() {
+            self.ulValueLen = value.len() as CK_ULONG;
+            return;
+        }
+        if (self.ulValueLen as usize) < value.len() {
+            self.ulValueLen = CK_UNAVAILABLE_INFORMATION;
+            return;
+        }
+        unsafe { slice::from_raw_parts_mut(self.pValue as *mut u8, value.len()) }
+            .copy_from_slice(&value);
+        self.ulValueLen = value.len() as CK_ULONG;
+    }
 }
