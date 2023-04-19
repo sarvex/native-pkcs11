@@ -16,14 +16,10 @@
 #![allow(non_snake_case)]
 
 #[cfg(target_os = "windows")]
-mod pkcs11_windows;
-#[cfg(target_os = "windows")]
-pub use pkcs11_windows::*;
+include!("pkcs11_windows.rs");
 
 #[cfg(target_os = "windows")]
 pub const CK_UNAVAILABLE_INFORMATION: u32 = std::u32::MAX;
 
 #[cfg(not(target_os = "windows"))]
-mod pkcs11_unix;
-#[cfg(not(target_os = "windows"))]
-pub use pkcs11_unix::*;
+include!("pkcs11_unix.rs");
