@@ -23,3 +23,11 @@ pub const CK_UNAVAILABLE_INFORMATION: u32 = std::u32::MAX;
 
 #[cfg(not(target_os = "windows"))]
 include!("pkcs11_unix.rs");
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CK_ATTRIBUTE {
+    pub type_: CK_ATTRIBUTE_TYPE,
+    pub pValue: CK_VOID_PTR,
+    pub ulValueLen: CK_ULONG,
+}

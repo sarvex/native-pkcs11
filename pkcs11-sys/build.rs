@@ -166,7 +166,8 @@ mod generate {
             .header("pkcs11.h")
             .derive_default(true)
             .parse_callbacks(Box::new(CargoCallbacks))
-            .raw_line(LICENSE_HEADER);
+            .raw_line(LICENSE_HEADER)
+            .blocklist_type("CK_ATTRIBUTE");
 
         #[cfg(target_os = "windows")]
         let bindings = windows_modifications(bindings);
